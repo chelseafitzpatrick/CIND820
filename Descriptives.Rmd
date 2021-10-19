@@ -1,0 +1,46 @@
+---
+title: "Housing Data Ocerview"
+output: html_notebook
+---
+
+Installing packages
+
+```{r}
+library(readxl)
+install.packages("SmartEDA")
+library("SmartEDA")
+```
+Importing the data
+```{r}
+AmesHousing <- read_excel("Downloads/AmesHousing.xls")
+View(AmesHousing)  
+```
+
+Home prices graph
+```{r}
+hist(AmesHousing$SalePrice)
+```
+Describe
+```{r}
+ExpData(data=AmesHousing,type=1)
+
+ExpData(data=AmesHousing,type=2)
+```
+Means
+```{r}
+ExpData(data=AmesHousing,type=2, fun = c("mean", "median", "var"))
+```
+Correlation plot for variables
+```{r}
+#install.packages("ggcorrplot")
+
+library(ggcorrplot)
+
+corr <- data.frame(AmesHousing$)
+
+corrs <- round(cor(corr), 1)
+
+ggcorrplot(corrs, method = "circle")
+```
+
+
