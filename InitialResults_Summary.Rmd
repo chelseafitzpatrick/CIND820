@@ -1,0 +1,144 @@
+---
+title: "Housing Data Ocerview"
+output: html_notebook
+---
+
+Installing packages
+
+```{r}
+library(readxl)
+install.packages("SmartEDA")
+library("SmartEDA")
+install.packages("dplyr")
+library("dplyr")
+```
+
+```{r}
+load.libraries <- c('data.table', 'testthat', 'gridExtra', 'corrplot', 'GGally', 'ggplot2', 'e1071', 'dplyr')
+
+install.lib <- load.libraries[!load.libraries %in% installed.packages()]
+for(libs in install.lib) install.packages(libs, dependences = TRUE)
+sapply(load.libraries, require, character = TRUE)
+```
+
+Importing the data
+```{r}
+AmesHousing <- read_excel("Downloads/AmesHousing.xls")
+View(AmesHousing)  
+```
+
+Home prices graph
+```{r}
+hist(AmesHousing$SalePrice)
+```
+
+Glimpse at data
+```{r}
+glimpse(AmesHousing)
+```
+
+Changing variable names 
+```{r}
+names(AmesHousing) <- tolower(names(AmesHousing))
+
+names(AmesHousing) <- gsub(" ", "_", names(AmesHousing))
+```
+plotting numeric variables against sale price
+```{r}
+plot(AmesHousing$lot_frontage, AmesHousing$saleprice)
+plot(AmesHousing$lot_area,AmesHousing$saleprice)
+plot(AmesHousing$overall_qual,AmesHousing$saleprice)
+plot(AmesHousing$overall_cond,AmesHousing$saleprice)
+plot(AmesHousing$year_built,AmesHousing$saleprice)
+plot(AmesHousing$overall_cond,AmesHousing$saleprice)
+plot(AmesHousing$total_bsmt_sf,AmesHousing$saleprice)
+plot(AmesHousing$gr_liv_area,AmesHousing$saleprice)
+plot(AmesHousing$yr_sold,AmesHousing$saleprice)
+```
+
+Means
+```{r}
+ExpData(data=AmesHousing,type=2, fun = c("mean", "median", "var"))
+```
+Correlation plot for variables
+```{r}
+#install.packages("ggcorrplot")
+
+library(ggcorrplot)
+
+corr <- data.frame(AmesHousing$lot_frontage, AmesHousing$mas_vnr_area, AmesHousing$bsmt_unf_sf, AmesHousing$total_bsmt_sf, AmesHousing$low_qual_fin_sf, AmesHousing$gr_liv_area, AmesHousing$garage_area, AmesHousing$saleprice)
+
+corrs <- round(cor(corr), 1)
+
+ggcorrplot(corrs)
+```
+```{r}
+Ames_cat <- AmesHousing[, .SD, .SDcols = cat_var]
+Ames_cont <- AmesHousing[, .SD, .SDcols = numeric_var]
+```
+
+missing values
+```{r}
+any(is.na(AmesHousing))
+
+sum(is.na(AmesHousing))
+```
+
+determining which variables include missing values 
+```{r}
+na.cols = which(colSums(is.na(AmesHousing)) > 0)
+```
+
+```{r}
+sort(colSums(sapply(AmesHousing[na.cols], is.na)), decreasing = TRUE)
+```
+How many homes have been remodelled 
+```{r}
+sum(AmesHousing[,'year_remod/add', with = FALSE] != AmesHousing[,'year_built', with = FALSE])
+
+#therefore, 1361/2900 homes have been remodeled - compare remodeled vs not to see if there is a large difference
+
+plot(AmesHousing$'year_remod/add', AmesHousing$saleprice)
+
+```
+
+plotting sale price by neighbourhood
+```{r}
+ggplot(AmesHousing, aes(x = neighborhood, y = saleprice)) + 
+  geom_boxplot(fill = "blue") + theme(axis.text.x = element_text(angle = 90))
+```
+
+
+```{r}
+ggplot(AmesHousing, aes(x = saleprice)) + 
+  geom_histogram(fill = "blue", col = "black", bins = 60) + 
+  scale_x_continuous(name = "Sale Price", limits = c(0, 800000))
+```
+removing outliers
+```{r}
+outlierMinMax <- quantile(AmesHousing$saleprice, c(.01, .99))
+
+Ames_clean <- AmesHousing[ AmesHousing$saleprice > outlierMinMax[1] & AmesHousing$saleprice < outlierMinMax[2],  ]
+
+```
+Glimpse new Ames
+```{r}
+glimpse(AmesHousing$saleprice)
+glimpse(Ames_clean$saleprice)
+```
+Train/test split
+```{r}
+# Set seed
+set.seed(1)
+# create partition for train data
+train_index <- createDataPartition(y = df$saleprice, p = 0.7, list = FALSE)
+# index train and test data
+train <- df[train_index, ]
+test <- df[-train_index, ]
+```
+```{r}
+write.csv(Ames_clean, "cleaned_housing.csv")
+write.csv(train, "train_housing.csv")
+write.csv(test, "test_housing.csv")
+```
+
