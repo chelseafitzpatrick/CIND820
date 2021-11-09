@@ -1,0 +1,55 @@
+---
+title: "Multiple Regression"
+output: html_notebook
+---
+```{r}
+install.packages('FNN') 
+install.packages('RCurl') 
+install.packages('MASS') 
+install.packages('leaps')
+install.packages('Metrics')
+```
+
+opening data
+```{r}
+df <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/cleaned_housing.csv", header = TRUE)
+
+```
+
+```{r}
+train <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/train_housing.csv", header = TRUE)
+
+```
+
+```{r}
+test <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/test_housing.csv", header = TRUE)
+
+```
+
+model
+```{r}
+model_mlr <- lm(saleprice~gr_liv_area+lot_frontage+overall_qual+overall_cond, data=train)
+summary(model_mlr)
+
+#apply the predict function
+
+prediction <- predict(model_mlr, interval="prediction",
+newdata =test)
+
+```
+
+```{r}
+#calculate errors
+
+errors <- prediction[,"fit"] - test$saleprice
+hist(errors)
+
+#compute root mean squared errors
+
+rmse <- rmse(test$saleprice,prediction)
+
+rmse
+
+```
+
+
