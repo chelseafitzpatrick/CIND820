@@ -9,7 +9,7 @@ Project aspects:
 
 Project steps:
 1.  General overview of data – determine which are missing data, or are skewed etc
-2.	Look at general themes of the data – which characteristics are related, which can be condensed in terms of categories
+2.	Look at general themes of the data – which characteristics are related, etc
 3.	Data visualizations to further understanding
 4.	Build initial model
 5.	Evaluate model
