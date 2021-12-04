@@ -15,6 +15,6 @@ Project steps:
 5.	Evaluate model
 6.	Build second model
 7.	Evaluate
-8.	Build third model
-9.	Evaluate
-10.	Fine tune models for increased prediction
+8.	Fine tune models for increased prediction
+9.	Evaluate models
+10.	Compare all models in terms of efficiency, prediction, and stability
