@@ -11,25 +11,25 @@ install.packages("SmartEDA")
 library("SmartEDA")
 install.packages("dplyr")
 library("dplyr")
-```
-
-```{r}
 load.libraries <- c('data.table', 'testthat', 'gridExtra', 'corrplot', 'GGally', 'ggplot2', 'e1071', 'dplyr')
 
 install.lib <- load.libraries[!load.libraries %in% installed.packages()]
 for(libs in install.lib) install.packages(libs, dependences = TRUE)
 sapply(load.libraries, require, character = TRUE)
 ```
+```{r}
+install.packages("mice")
+```
 
 Importing the data
 ```{r}
-AmesHousing <- read_excel("Downloads/AmesHousing.xls")
-View(AmesHousing)  
+AmesHousing <- read_excel("/Users/chelseafitzpatrick/Downloads/AmesHousing.xls")
+View(AmesHousing)
 ```
 
 Home prices graph
 ```{r}
-hist(AmesHousing$SalePrice)
+hist(AmesHousing$SalePrice, xlab = "Sale Price", main = paste("Histogram of Sale Price"))
 ```
 
 Glimpse at data
@@ -43,102 +43,256 @@ names(AmesHousing) <- tolower(names(AmesHousing))
 
 names(AmesHousing) <- gsub(" ", "_", names(AmesHousing))
 ```
-plotting numeric variables against sale price
-```{r}
-plot(AmesHousing$lot_frontage, AmesHousing$saleprice)
-plot(AmesHousing$lot_area,AmesHousing$saleprice)
-plot(AmesHousing$overall_qual,AmesHousing$saleprice)
-plot(AmesHousing$overall_cond,AmesHousing$saleprice)
-plot(AmesHousing$year_built,AmesHousing$saleprice)
-plot(AmesHousing$overall_cond,AmesHousing$saleprice)
-plot(AmesHousing$total_bsmt_sf,AmesHousing$saleprice)
-plot(AmesHousing$gr_liv_area,AmesHousing$saleprice)
-plot(AmesHousing$yr_sold,AmesHousing$saleprice)
-```
 
+Reformating character variables to numeric and condensing categories
+```{r}
+table(AmesHousing$street)
+
+AmesHousing$street_num[AmesHousing$street == "Pave"] <- 1
+AmesHousing$street_num[AmesHousing$street != "Pave"] <- 0
+
+table(AmesHousing$street_num)
+```
+```{r}
+table(AmesHousing$alley)
+
+AmesHousing$al[AmesHousing$alley == "NA"] <- 1
+AmesHousing$al[AmesHousing$alley != "NA"] <- 0
+
+table(AmesHousing$al)
+```
+```{r}
+table(AmesHousing$lot_shape)
+
+AmesHousing$lot[AmesHousing$lot_shape == "Reg"] <- 1
+AmesHousing$lot[AmesHousing$lot_shape != "Reg"] <- 0
+
+table(AmesHousing$lot)
+```
+```{r}
+table(AmesHousing$ms_zoning)
+
+
+AmesHousing$zone[AmesHousing$ms_zoning == c("RH", "RL", "RM")] <- 1
+AmesHousing$zone[AmesHousing$ms_zoning != c("RH", "RL", "RM")] <- 0
+
+table(AmesHousing$zone)
+
+```
+```{r}
+table(AmesHousing$land_contour)
+
+
+AmesHousing$land[AmesHousing$land_contour == "Lvl"] <- 1
+AmesHousing$land[AmesHousing$land_contour != "Lvl"] <- 0
+
+table(AmesHousing$land)
+```
+```{r}
+table(AmesHousing$lot_config)
+
+
+AmesHousing$lot_location[AmesHousing$lot_config == "Inside"] <- 1
+AmesHousing$lot_location[AmesHousing$lot_config != "Inside"] <- 0
+
+table(AmesHousing$lot_location)
+```
+```{r}
+table(AmesHousing$land_slope)
+
+
+AmesHousing$land_sl[AmesHousing$land_slope == "Gtl"] <- 1
+AmesHousing$land_sl[AmesHousing$land_slope != "Gtl"] <- 0
+
+table(AmesHousing$land_sl)
+```
+```{r}
+table(AmesHousing$roof_style)
+
+
+AmesHousing$roof[AmesHousing$roof_style == "Gable"] <- 1
+AmesHousing$roof[AmesHousing$roof_style != "Gable"] <- 0
+
+table(AmesHousing$roof)
+```
+```{r}
+table(AmesHousing$roof_matl)
+
+
+AmesHousing$roof_m[AmesHousing$roof_matl == "CompShg"] <- 1
+AmesHousing$roof_m[AmesHousing$roof_matl != "CompShg"] <- 0
+
+table(AmesHousing$roof_m)
+```
+```{r}
+table(AmesHousing$heating)
+
+
+AmesHousing$heat[AmesHousing$heating == "GasA"] <- 1
+AmesHousing$heat[AmesHousing$heating != "GasA"] <- 0
+
+table(AmesHousing$heat)
+```
+```{r}
+table(AmesHousing$sale_condition)
+
+
+AmesHousing$sale_cond[AmesHousing$sale_condition == "Normal"] <- 1
+AmesHousing$sale_cond[AmesHousing$sale_condition != "Normal"] <- 0
+
+table(AmesHousing$sale_cond)
+```
+```{r}
+table(AmesHousing$condition_1)
+
+
+AmesHousing$condition1[AmesHousing$condition_1 == "Norm"] <- 1
+AmesHousing$condition1[AmesHousing$condition_1 != "Norm"] <- 0
+
+table(AmesHousing$condition1)
+```
+```{r}
+table(AmesHousing$bldg_type)
+
+
+AmesHousing$build[AmesHousing$bldg_type == "1Fam"] <- 1
+AmesHousing$build[AmesHousing$bldg_type != "1Fam"] <- 0
+
+table(AmesHousing$build)
+```
+```{r}
+table(AmesHousing$exter_qual)
+
+AmesHousing$extertior[AmesHousing$exter_qual == "TA"] <- 1
+AmesHousing$extertior[AmesHousing$exter_qual != "TA"] <- 0
+
+table(AmesHousing$extertior)
+```
+```{r}
+table(AmesHousing$exter_cond)
+
+AmesHousing$extertior_cond[AmesHousing$exter_cond == "TA"] <- 1
+AmesHousing$extertior_cond[AmesHousing$exter_cond != "TA"] <- 0
+
+table(AmesHousing$extertior_cond)
+```
+```{r}
+table(AmesHousing$central_air)
+
+AmesHousing$CA[AmesHousing$central_air == "Y"] <- 1
+AmesHousing$CA[AmesHousing$central_air != "Y"] <- 0
+
+table(AmesHousing$CA)
+```
+```{r}
+table(AmesHousing$electrical)
+
+AmesHousing$elec[AmesHousing$electrical == "SBrkr"] <- 1
+AmesHousing$elec[AmesHousing$electrical != "SBrkr"] <- 0
+
+table(AmesHousing$elec)
+```
+```{r}
+table(AmesHousing$functional)
+
+AmesHousing$func[AmesHousing$functional == "Typ"] <- 1
+AmesHousing$func[AmesHousing$functional != "Typ"] <- 0
+
+table(AmesHousing$func)
+```
+Deleting old columns that were recategorized / or categories that could not be adjusted
+```{r}
+new_df <- subset(AmesHousing, select=-c(sale_condition, heating, roof_matl, street, lot_shape, ms_zoning, land_contour, lot_config, land_slope, roof_style, lot_frontage, alley, utilities, neighborhood, condition_1, condition_2, bldg_type, house_style, exterior_1st, exterior_2nd, mas_vnr_type, exter_qual, exter_cond, foundation, bsmt_qual, bsmt_cond, bsmt_exposure, bsmtfin_type_1, bsmtfin_type_2, heating_qc, central_air, electrical, kitchen_qual, functional, fireplace_qu, garage_type, garage_finish, garage_qual, garage_cond, paved_drive, pool_qc, fence, misc_feature, sale_type, order))
+```
 Means
 ```{r}
-ExpData(data=AmesHousing,type=2, fun = c("mean", "median", "var"))
+ExpData(data=new_df,type=2, fun = c("mean", "median", "var"))
 ```
-Correlation plot for variables
+
+Does the dataset still contain any missing values
 ```{r}
-#install.packages("ggcorrplot")
-
-library(ggcorrplot)
-
-corr <- data.frame(AmesHousing$lot_frontage, AmesHousing$mas_vnr_area, AmesHousing$bsmt_unf_sf, AmesHousing$total_bsmt_sf, AmesHousing$low_qual_fin_sf, AmesHousing$gr_liv_area, AmesHousing$garage_area, AmesHousing$saleprice)
-
-corrs <- round(cor(corr), 1)
-
-ggcorrplot(corrs)
+any(is.na(new_df))
+sum(is.na(new_df))
 ```
+
+Determining which variables include missing values 
 ```{r}
-Ames_cat <- AmesHousing[, .SD, .SDcols = cat_var]
-Ames_cont <- AmesHousing[, .SD, .SDcols = numeric_var]
-```
+na.cols = which(colSums(is.na(new_df)) > 0)
 
-missing values
+sort(colSums(sapply(new_df[na.cols], is.na)), decreasing = TRUE)
+```
+Remove any missing cases from the dataset
 ```{r}
-any(is.na(AmesHousing))
-
-sum(is.na(AmesHousing))
-```
-
-determining which variables include missing values 
-```{r}
-na.cols = which(colSums(is.na(AmesHousing)) > 0)
-```
-
-```{r}
-sort(colSums(sapply(AmesHousing[na.cols], is.na)), decreasing = TRUE)
-```
-How many homes have been remodelled 
-```{r}
-sum(AmesHousing[,'year_remod/add', with = FALSE] != AmesHousing[,'year_built', with = FALSE])
-
-#therefore, 1361/2900 homes have been remodeled - compare remodeled vs not to see if there is a large difference
-
-plot(AmesHousing$'year_remod/add', AmesHousing$saleprice)
-
-```
-
-plotting sale price by neighbourhood
-```{r}
-ggplot(AmesHousing, aes(x = neighborhood, y = saleprice)) + 
-  geom_boxplot(fill = "blue") + theme(axis.text.x = element_text(angle = 90))
+x <- new_df[complete.cases(new_df), ]
+str(x)
 ```
 
 
-```{r}
-ggplot(AmesHousing, aes(x = saleprice)) + 
-  geom_histogram(fill = "blue", col = "black", bins = 60) + 
-  scale_x_continuous(name = "Sale Price", limits = c(0, 800000))
-```
 removing outliers
 ```{r}
-outlierMinMax <- quantile(AmesHousing$saleprice, c(.01, .99))
-
-Ames_clean <- AmesHousing[ AmesHousing$saleprice > outlierMinMax[1] & AmesHousing$saleprice < outlierMinMax[2],  ]
-
+outlierMinMax <- quantile(x$saleprice, c(.01, .99))
+Ames_clean <- x[ x$saleprice > outlierMinMax[1] & x$saleprice < outlierMinMax[2],  ]
 ```
+
 Glimpse new Ames
 ```{r}
-glimpse(AmesHousing$saleprice)
+glimpse(x$saleprice)
 glimpse(Ames_clean$saleprice)
 ```
 Train/test split
 ```{r}
-# Set seed
 set.seed(1)
 # create partition for train data
 train_index <- createDataPartition(y = df$saleprice, p = 0.7, list = FALSE)
 # index train and test data
 train <- df[train_index, ]
 test <- df[-train_index, ]
-```
-```{r}
 write.csv(Ames_clean, "cleaned_housing.csv")
+write.csv(AmesHousing, "ames_housing.csv")
 write.csv(train, "train_housing.csv")
 write.csv(test, "test_housing.csv")
 ```
-
+Train/test split
+```{r}
+set.seed(44)
+# create partition for train data
+train_index <- createDataPartition(y = df$saleprice, p = 0.7, list = FALSE)
+# index train and test data
+train2 <- df[train_index, ]
+test2 <- df[-train_index, ]
+write.csv(train2, "train_housing2.csv")
+write.csv(test2, "test_housing2.csv")
+```
+Train/test split
+```{r}
+set.seed(15)
+# create partition for train data
+train_index <- createDataPartition(y = df$saleprice, p = 0.7, list = FALSE)
+# index train and test data
+train3 <- df[train_index, ]
+test3 <- df[-train_index, ]
+write.csv(train3, "train_housing3.csv")
+write.csv(test3, "test_housing3.csv")
+```
+Train/test split
+```{r}
+set.seed(50)
+# create partition for train data
+train_index <- createDataPartition(y = df$saleprice, p = 0.7, list = FALSE)
+# index train and test data
+train4 <- df[train_index, ]
+test4 <- df[-train_index, ]
+write.csv(train4, "train_housing4.csv")
+write.csv(test4, "test_housing4.csv")
+```
+Train/test split
+```{r}
+set.seed(3)
+# create partition for train data
+train_index <- createDataPartition(y = df$saleprice, p = 0.7, list = FALSE)
+# index train and test data
+train5 <- df[train_index, ]
+test5 <- df[-train_index, ]
+write.csv(train5, "train_housing5.csv")
+write.csv(test5, "test_housing5.csv")
+```

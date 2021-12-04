@@ -1,0 +1,131 @@
+---
+title: "Random Forest"
+output: html_notebook
+---
+
+Packages needed
+```{r}
+library(randomForest)
+library(caret)
+```
+
+opening data
+```{r}
+df <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/cleaned_housing.csv", header = TRUE)
+
+train <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/train_housing.csv", header = TRUE)
+test <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/test_housing.csv", header = TRUE)
+
+train2 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/train_housing2.csv", header = TRUE)
+test2 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/test_housing2.csv", header = TRUE)
+
+train3 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/train_housing3.csv", header = TRUE)
+test3 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/test_housing3.csv", header = TRUE)
+
+train4 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/train_housing4.csv", header = TRUE)
+test4 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/test_housing4.csv", header = TRUE)
+
+train5 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/train_housing5.csv", header = TRUE)
+test5 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/test_housing5.csv", header = TRUE)
+```
+
+
+```{r}
+RF_model <- randomForest(saleprice ~., data=train)
+RF_model2 <- randomForest(saleprice ~., data=train2)
+RF_model3 <- randomForest(saleprice ~., data=train3)
+RF_model4 <- randomForest(saleprice ~., data=train4)
+RF_model5 <- randomForest(saleprice ~., data=train5)
+```
+Time taken to run the model
+```{r}
+system.time(RF_model <- randomForest(saleprice ~., data=train))
+```
+
+Evaluation metrics
+```{r}
+prediction<- predict(RF_model, test)
+RF_output <- cbind(test, prediction)
+mod1 <- rmse(RF_output$saleprice, RF_output$prediction)
+
+prediction2<- predict(RF_model2, test2)
+RF_output2 <- cbind(test2, prediction2)
+mod2 <- rmse(RF_output2$saleprice, RF_output2$prediction)
+
+prediction3<- predict(RF_model3, test3)
+RF_output3 <- cbind(test3, prediction3)
+mod3 <- rmse(RF_output3$saleprice, RF_output3$prediction)
+
+prediction4<- predict(RF_model4, test4)
+RF_output4 <- cbind(test4, prediction4)
+mod4 <- rmse(RF_output4$saleprice, RF_output4$prediction)
+
+prediction5<- predict(RF_model5, test5)
+RF_output5 <- cbind(test5, prediction5)
+mod5 <- rmse(RF_output5$saleprice, RF_output5$prediction)
+```
+print RMSEs
+```{r}
+mod1
+mod2
+mod3
+mod4
+mod5
+```
+MAEs
+```{r}
+mae(RF_output$saleprice, RF_output$prediction)
+mae(RF_output2$saleprice, RF_output2$prediction)
+mae(RF_output3$saleprice, RF_output3$prediction)
+mae(RF_output4$saleprice, RF_output4$prediction)
+mae(RF_output5$saleprice, RF_output5$prediction)
+```
+
+Models with selected features
+```{r}
+RF_mod <- randomForest(saleprice~lot_area+overall_qual+overall_cond+year_built+year_remod.add+X1st_flr_sf+X2nd_flr_sf+land_sl+roof+roof_m, data=train)
+
+RF_mod2 <- randomForest(saleprice~lot_area+overall_qual+overall_cond+year_built+year_remod.add+X1st_flr_sf+X2nd_flr_sf+land_sl+roof+roof_m, data=train2)
+
+RF_mod3 <- randomForest(saleprice~lot_area+overall_qual+overall_cond+year_built+year_remod.add+X1st_flr_sf+X2nd_flr_sf+land_sl+roof+roof_m, data=train3)
+
+RF_mod4 <- randomForest(saleprice~lot_area+overall_qual+overall_cond+year_built+year_remod.add+X1st_flr_sf+X2nd_flr_sf+land_sl+roof+roof_m, data=train4)
+
+RF_mod5 <- randomForest(saleprice~lot_area+overall_qual+overall_cond+year_built+year_remod.add+X1st_flr_sf+X2nd_flr_sf+land_sl+roof+roof_m, data=train5)
+```
+Time taken to run the model
+```{r}
+system.time(randomForest(saleprice~lot_area+overall_qual+overall_cond+year_built+year_remod.add+X1st_flr_sf+X2nd_flr_sf+land_sl+roof+roof_m, data=train))
+```
+Evaluation metrics
+```{r}
+pred_RF<- predict(RF_mod, test)
+RF_out <- cbind(test, pred_RF)
+rmse(RF_out$saleprice, RF_out$pred_RF)
+mae(RF_out$saleprice, RF_out$pred_RF)
+
+pred_RF2<- predict(RF_mod2, test2)
+RF_out2 <- cbind(test2, pred_RF2)
+rmse(RF_out2$saleprice, RF_out2$pred_RF2)
+mae(RF_out2$saleprice, RF_out2$pred_RF2)
+
+pred_RF3<- predict(RF_mod3, test3)
+RF_out3 <- cbind(test3, pred_RF3)
+rmse(RF_out3$saleprice, RF_out3$pred_RF3)
+mae(RF_out3$saleprice, RF_out3$pred_RF3)
+
+pred_RF4<- predict(RF_mod4, test4)
+RF_out4 <- cbind(test4, pred_RF4)
+rmse(RF_out4$saleprice, RF_out4$pred_RF4)
+mae(RF_out4$saleprice, RF_out4$pred_RF4)
+
+pred_RF5<- predict(RF_mod5, test5)
+RF_out5 <- cbind(test5, pred_RF5)
+rmse(RF_out5$saleprice, RF_out5$pred_RF5)
+mae(RF_out5$saleprice, RF_out5$pred_RF5)
+```
+```{r}
+summary(RF_mod)
+```
+
+

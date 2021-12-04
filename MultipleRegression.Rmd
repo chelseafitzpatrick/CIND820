@@ -3,53 +3,131 @@ title: "Multiple Regression"
 output: html_notebook
 ---
 ```{r}
-install.packages('FNN') 
-install.packages('RCurl') 
-install.packages('MASS') 
-install.packages('leaps')
-install.packages('Metrics')
+library(FNN) 
+library(RCurl) 
+library(MASS) 
+library(leaps)
+library(Metrics)
+library(caret)
 ```
 
 opening data
 ```{r}
 df <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/cleaned_housing.csv", header = TRUE)
-
-```
-
-```{r}
 train <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/train_housing.csv", header = TRUE)
-
-```
-
-```{r}
 test <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/test_housing.csv", header = TRUE)
 
+train2 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/train_housing2.csv", header = TRUE)
+test2 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/test_housing2.csv", header = TRUE)
+
+train3 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/train_housing3.csv", header = TRUE)
+test3 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/test_housing3.csv", header = TRUE)
+
+train4 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/train_housing4.csv", header = TRUE)
+test4 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/test_housing4.csv", header = TRUE)
+
+train5 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/train_housing5.csv", header = TRUE)
+test5 <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/test_housing5.csv", header = TRUE)
 ```
 
 model
 ```{r}
-model_mlr <- lm(saleprice~gr_liv_area+lot_frontage+overall_qual+overall_cond, data=train)
+model_mlr <- lm(saleprice~., data=train)
 summary(model_mlr)
 
-#apply the predict function
+model_mlr2 <- lm(saleprice~., data=train2)
+summary(model_mlr2)
 
-prediction <- predict(model_mlr, interval="prediction",
-newdata =test)
+model_mlr3 <- lm(saleprice~., data=train3)
+summary(model_mlr3)
 
+model_mlr4 <- lm(saleprice~., data=train4)
+summary(model_mlr4)
+
+model_mlr5 <- lm(saleprice~., data=train5)
+summary(model_mlr5)
 ```
 
 ```{r}
-#calculate errors
-
-errors <- prediction[,"fit"] - test$saleprice
-hist(errors)
-
-#compute root mean squared errors
-
-rmse <- rmse(test$saleprice,prediction)
-
-rmse
-
+#apply the predict function
+prediction <- predict(model_mlr, test, type="response")
+prediction2 <- predict(model_mlr2, test2, type="response")
+prediction3 <- predict(model_mlr3, test3, type="response")
+prediction4 <- predict(model_mlr4, test4, type="response")
+prediction5 <- predict(model_mlr5, test5, type="response")
 ```
+Model evaluation
+```{r}
+model_output <- cbind(test, prediction)
+model_output2 <- cbind(test2, prediction2)
+model_output3 <- cbind(test3, prediction3)
+model_output4 <- cbind(test4, prediction4)
+model_output5 <- cbind(test5, prediction5)
+
+rmse(model_output$saleprice,model_output$prediction)
+rmse(model_output2$saleprice,model_output2$prediction2)
+rmse(model_output3$saleprice,model_output3$prediction3)
+rmse(model_output4$saleprice,model_output4$prediction4)
+rmse(model_output5$saleprice,model_output5$prediction5)
+
+mae(model_output$saleprice,model_output$prediction)
+mae(model_output2$saleprice,model_output2$prediction2)
+mae(model_output3$saleprice,model_output3$prediction3)
+mae(model_output4$saleprice,model_output4$prediction4)
+mae(model_output5$saleprice,model_output5$prediction5)
+```
+
+Model time
+```{r}
+system.time(model_mlr <- lm(saleprice~., data=train))
+```
+Nodel with selected featued
+```{r}
+mlr <- lm(saleprice~lot_area+overall_qual+overall_cond+year_built+year_remod.add+X1st_flr_sf+X2nd_flr_sf+land_sl+roof+roof_m, data=train)
+summary(mlr)
+
+mlr2 <- lm(saleprice~lot_area+overall_qual+overall_cond+year_built+year_remod.add+X1st_flr_sf+X2nd_flr_sf+land_sl+roof+roof_m, data=train2)
+summary(mlr2)
+
+mlr3 <- lm(saleprice~lot_area+overall_qual+overall_cond+year_built+year_remod.add+X1st_flr_sf+X2nd_flr_sf+land_sl+roof+roof_m, data=train3)
+summary(mlr3)
+
+mlr4 <- lm(saleprice~lot_area+overall_qual+overall_cond+year_built+year_remod.add+X1st_flr_sf+X2nd_flr_sf+land_sl+roof+roof_m, data=train4)
+summary(mlr4)
+
+mlr5 <- lm(saleprice~lot_area+overall_qual+overall_cond+year_built+year_remod.add+X1st_flr_sf+X2nd_flr_sf+land_sl+roof+roof_m, data=train5)
+summary(mlr5)
+```
+
+```{r}
+#apply the predict function
+pred <- predict(mlr, test, type="response")
+pred2 <- predict(mlr2, test2, type="response")
+pred3 <- predict(mlr3, test3, type="response")
+pred4 <- predict(mlr4, test4, type="response")
+pred5 <- predict(mlr5, test5, type="response")
+```
+
+
+```{r}
+m_output <- cbind(test, pred)
+m_output2 <- cbind(test2, pred2)
+m_output3 <- cbind(test3, pred3)
+m_output4 <- cbind(test4, pred4)
+m_output5 <- cbind(test5, pred5)
+
+rmse(m_output$saleprice,m_output$pred)
+rmse(m_output2$saleprice,m_output2$pred2)
+rmse(m_output3$saleprice,m_output3$pred3)
+rmse(m_output4$saleprice,m_output4$pred4)
+rmse(m_output5$saleprice,m_output5$pred5)
+
+mae(m_output$saleprice,m_output$pred)
+mae(m_output2$saleprice,m_output2$pred2)
+mae(m_output3$saleprice,m_output3$pred3)
+mae(m_output4$saleprice,m_output4$pred4)
+mae(m_output5$saleprice,m_output5$pred5)
+```
+
 
 

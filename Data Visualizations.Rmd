@@ -1,0 +1,57 @@
+---
+title: "Figures"
+output:
+  pdf_document: default
+  word_document: default
+---
+```{r}
+library(ggplot2)
+library(ggcorrplot)
+library(corrplot)
+```
+
+Open data
+```{r}
+df <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/cleaned_housing.csv", header = TRUE)
+AmesHousing <- read.csv(file = "/Users/chelseafitzpatrick/Desktop/CIND 820/Data Analysis/ames_housing.csv", header = TRUE)
+```
+Distribution of Sale Price
+```{r}
+ggplot(data = df, aes(x=saleprice)) +
+    geom_histogram(binwidth=20000, fill="#69b3a2", alpha=0.9) +
+    ggtitle("Sale Price Distribution") +
+    theme(plot.title = element_text(size=15)) +
+            xlab("Sale Price") +
+            ylab("Frequency")
+```
+Correlation Matrix
+```{r}
+corr <- subset(df, select=c(lot_area, overall_qual, overall_cond, year_built, year_remod.add, gr_liv_area, yr_sold, lot, land))
+
+corrs <- round(cor(corr), 1)
+
+ggcorrplot(corrs, method="circle", title= "Housing Data Correlations")
+```
+```{r}
+corrplot(cor(df), method = "circle",
+        title = "Correlations of Housing Data",
+        tl.pos = "n", mar = c(2, 1, 3, 1)) 
+```
+
+Relationship between Sale Price and Continuous variables
+```{r}
+plot(df$lot_area, df$saleprice, xlab="Lot Area", ylab="Sale Price")
+plot(df$overall_qual, df$saleprice, xlab="Overall Quality", ylab="Sale Price")
+plot(df$overall_cond, df$saleprice, xlab="Overall Condition", ylab="Sale Price")
+plot(df$year_built, df$saleprice, xlab="Year Built", ylab="Sale Price")
+plot(df$year_remod.add, df$saleprice, xlab="Remodel or Addition Year", ylab="Sale Price")
+plot(df$gr_liv_area, df$saleprice, xlab="Living Area", ylab="Sale Price")
+plot(df$yr_sold, df$saleprice, xlab="Year Sold", ylab="Sale Price")
+```
+Sale price by neighbourhood
+```{r}
+ggplot(AmesHousing, aes(x = neighborhood, y = saleprice)) + 
+  geom_boxplot(fill = "blue") + theme(axis.text.x = element_text(angle = 90)) + ylab("Sale Price") + xlab("Neighbourhood")
+```
+
+
